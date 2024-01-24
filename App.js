@@ -4,6 +4,7 @@ const fs = require('fs');
 const short = require('short-uuid');
 const { error } = require('console');
 require('dotenv').config();
+const User = require('./models/userModel');
 
 const PORT = process.env.PORT || 3001;
 const DB_URL = process.env.DB_URL;
@@ -15,41 +16,6 @@ mongoose.connect(DB_URL).then((connection) => {
     console.log("vfjde", err);
 })
 
-
-const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true,
-        minLength: 8,
-    },
-    confirmPassword: {
-        type: String,
-        required: true,
-        minLength: 8,
-        validate: {
-            validator: function () {
-                return this.password === this.confirmPassword
-            },
-            message: "Password and Confirm Password should be same"
-        }
-    },
-    address: {
-        type: String,
-        required: true
-    }
-})
-
-const User = mongoose.model("User", userSchema);
-
 const app = express();
 const data = fs.readFileSync("./data.json", "utf-8");
 const userData = JSON.parse(data);
@@ -58,6 +24,8 @@ app.use(express.json());
 app.get('/api/user/', getUserHandler);
 app.post('/api/user/', createUserHandler);
 app.get('/api/user/:id', getuserById);
+app.patch('/api/user/:id', updateUserById);
+app.delete('/api/user/:id', deleteUserById);
 
 async function getUserHandler(req, res) {
     try {
@@ -127,6 +95,56 @@ async function getuserById(req, res) {
             status: 500,
             message: err.message
         })
+    }
+}
+
+async function updateUserById(req, res) {
+    try {
+        const { id } = req.params;
+        const updatedUserData = req.body
+        console.log('userid', id);
+        const updatedUser = await User.findByIdAndUpdate(id, updatedUserData, { new: true })
+        if (!updatedUser) {
+            throw new Error("user not found");
+        }
+        else {
+            res.status(200).json({
+                status: 200,
+                message: "User updated successfully",
+                data: updatedUser
+            })
+        }
+
+    } catch (err) {
+        res.status(500).json({
+            status: 500,
+            message: err.message
+        })
+
+    }
+}
+
+async function deleteUserById(req, res) {
+    try {
+        const { id } = req.params;
+        const deletedUser = await User.findByIdAndDelete(id)
+        if (!deletedUser) {
+            throw new Error("user not found");
+        }
+        else {
+            res.status(200).json({
+                status: 200,
+                message: "User deleted successfully",
+                data: deletedUser
+            })
+        }
+
+    } catch (err) {
+        res.status(500).json({
+            status: 500,
+            message: err.message
+        })
+
     }
 }
 
