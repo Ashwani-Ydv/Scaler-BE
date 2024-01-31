@@ -100,4 +100,28 @@ const updateElementByIdFactory = (elementModel) => async (req, res) => {
     }
 }
 
-module.exports = { checkInput, getAllFactory, getElementByIdFactory, createElementFactory, updateElementByIdFactory }
+const deleteElementByIdFactory = (elementModel) => async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedElement = await elementModel.findByIdAndDelete(id)
+        if (!deletedElement) {
+            throw new Error("Data not found");
+        }
+        else {
+            res.status(200).json({
+                status: 200,
+                message: "Data deleted successfully",
+                data: deletedElement
+            })
+        }
+
+    } catch (err) {
+        res.status(500).json({
+            status: 500,
+            message: err.message
+        })
+
+    }
+}
+
+module.exports = { checkInput, getAllFactory, getElementByIdFactory, createElementFactory, updateElementByIdFactory, deleteElementByIdFactory }
