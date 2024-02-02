@@ -13,7 +13,6 @@ const checkInput = function (req, res, next) {
 }
 
 const getAllFactory = (elementModel) => async (req, res) => {
-    console.log("get all factory", elementModel);
     try {
         const data = await elementModel.find();
         if (data.length === 0)
@@ -78,7 +77,6 @@ const updateElementByIdFactory = (elementModel) => async (req, res) => {
     try {
         const { id } = req.params;
         const updatedProductData = req.body
-        console.log('Productid', id);
         const updatedElement = await elementModel.findByIdAndUpdate(id, updatedProductData, { new: true })
         if (!updatedElement) {
             throw new Error("Data not found");

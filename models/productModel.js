@@ -32,6 +32,25 @@ const productSchema = new mongoose.Schema({
             },
             message: "discount should not be greater than price"
         }
+    },
+    description: {
+        type: String,
+        required: [true, "Product description is required"],
+        maxLenght: [200, "Product description should not be greater than 200 character"]
+    },
+    stock: {
+        type: Number,
+        required: [true, "Product stock is required"],
+        validate: {
+            validator: function () {
+                return this.stock >= 0;
+            },
+            message: "Stock should be greater than equal zero"
+        }
+    },
+    brand: {
+        type: String,
+        required: [true, "Product brand is required"]
     }
 })
 
