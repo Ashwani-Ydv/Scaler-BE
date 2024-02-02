@@ -58,8 +58,10 @@ const getElementByIdFactory = (elementModel) => async (req, res) => {
 
 const createElementFactory = (elementModel) => async (req, res) => {
     try {
+        console.log('creating product');
         const elementDetails = req.body;
         const data = await elementModel.create(elementDetails);
+        console.log('post creation');
         res.status(200).json({
             message: "Data created successfully",
             data: data

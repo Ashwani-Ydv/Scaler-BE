@@ -22,6 +22,22 @@ const data = fs.readFileSync("./data.json", "utf-8");
 const userData = JSON.parse(data);
 app.use(express.json());
 
+app.use((req, res, next) => {
+    console.log(`${req.method} request to ${req.path}`)
+    next();
+})
+
+// app.use('/search', function (req, res) {
+//     const sortParams = req.query.sort;
+//     const selectedParams = req.query.select;
+//     console.log('sort', sortParams);
+//     console.log('selected', selectedParams);
+//     res.status(200).json({
+//         message: 'search successfull',
+//         data: req.query
+//     })
+// })
+
 // app.use(checkInput);
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);

@@ -54,5 +54,24 @@ const productSchema = new mongoose.Schema({
     }
 })
 
+const validCategories = ['electronics', 'clothing', 'furniture', 'stationery'];
+
+productSchema.pre('save', function (next) {
+    console.log('pre save hook');
+    const invalidCategories = this.categories.filter(category => {
+        return !validCategories.includes(category);
+    })
+    if (invalidCategories.length) {
+        return next(new Error(`Invalid categories ${invalidCategories.join(' ')}`));
+    }
+    else {
+        next();
+    }
+})
+
+productSchema.post('save', function () {
+    console.log('post save hook');
+})
+
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;
