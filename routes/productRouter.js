@@ -20,25 +20,42 @@ productRouter.delete("/:id", deleteProductById);
 async function getProducts(req, res) {
     const sortQuery = req.query.sort;
     const selectQuery = req.query.select;
+    const limit = req.query.limit;
+    const page = req.query.page;
+    const skip = (page - 1) * limit;
+    console.log('skip', skip);
     console.log('sortQuery', sortQuery);
     console.log('selectQuery', selectQuery);
+
+    /** filtering */
+    const filterQuery = req.query.filter;
     /** sorting */
-    let QueryResPromise = Product.find();
-    if (sortQuery) {
-        const [sortParams, order] = sortQuery.split(" ")
-        console.log('sortParams', sortParams);
-        console.log('order', order);
-        if (order === 'asc') {
-            QueryResPromise = QueryResPromise.sort(sortParams);
-        }
-        else {
-            QueryResPromise = QueryResPromise.sort(`-${sortParams}`);
-        }
+    let queryResPromise = Product.find();
+    // if (sortQuery) {
+    //     const [sortParams, order] = sortQuery.split(" ")
+    //     console.log('sortParams', sortParams);
+    //     console.log('order', order);
+    //     if (order === 'asc') {
+    //         queryResPromise = queryResPromise.sort(sortParams);
+    //     }
+    //     else {
+    //         queryResPromise = queryResPromise.sort(`-${sortParams}`);
+    //     }
+    // }
+    // if (selectQuery) {
+    //     queryResPromise = queryResPromise.select(selectQuery);
+    // }
+    // if (limit) {
+    //     queryResPromise = queryResPromise.skip(skip).limit(limit)
+    // }
+
+    if (filterQuery) {
+        console.log('filter', filterQuery);
+        const filterObj = JSON.parse(filterQuery);
+        queryResPromise = await queryResPromise.find(filterObj);
     }
-    if (selectQuery) {
-        QueryResPromise = QueryResPromise.select(selectQuery);
-    }
-    const result = await QueryResPromise;
+
+    const result = await queryResPromise;
     res.status(200).json({
         message: 'search successfull',
         data: result
