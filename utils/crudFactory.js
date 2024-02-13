@@ -35,7 +35,7 @@ const getAllFactory = (elementModel) => async (req, res) => {
     }
 }
 
-const getElementByIdFactory = (elementModel) => async (req, res) => {
+const getElementByIdFactory = (elementModel) => async (req, res, next) => {
     try {
         const { id } = req.params;
         // const Product = ProductData.find((Product) => Product.id === id);
@@ -49,10 +49,11 @@ const getElementByIdFactory = (elementModel) => async (req, res) => {
             data: data
         });
     } catch (err) {
-        res.status(500).json({
-            status: 500,
-            message: err.message
-        })
+        // res.status(500).json({
+        //     status: 500,
+        //     message: err.message
+        // })
+        next(err)
     }
 }
 

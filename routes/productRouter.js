@@ -13,9 +13,16 @@ const Product = require("../models/productModel");
 
 productRouter.get("/", getProducts);
 productRouter.post("/", createProductHandler);
+productRouter.get("/bigBillionDay", getBigBillionProducts, getProducts);
 productRouter.get("/:id", getProductById);
 productRouter.patch("/:id", updateProductById);
 productRouter.delete("/:id", deleteProductById);
+
+
+async function getBigBillionProducts(req, res, next) {
+    req.query.filter = JSON.stringify({ stock: { lt: 50 }, averageRating: { lt: 5 } });
+    next();
+}
 
 async function getProducts(req, res) {
     const sortQuery = req.query.sort;
@@ -52,7 +59,9 @@ async function getProducts(req, res) {
     if (filterQuery) {
         console.log('filter', filterQuery);
         const filterObj = JSON.parse(filterQuery);
-        queryResPromise = await queryResPromise.find(filterObj);
+        const filterObjStr = JSON.stringify(filterObj).replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
+        const filterFinalObj = JSON.parse(filterObjStr);
+        queryResPromise = await queryResPromise.find(filterFinalObj);
     }
 
     const result = await queryResPromise;

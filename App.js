@@ -42,6 +42,15 @@ app.use((req, res, next) => {
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(statusCode).json({
+        status: 500,
+        message: message
+    })
+})
+
 app.use(function (req, res) {
     res.status(200).send('Hello World');
 })
