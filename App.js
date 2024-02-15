@@ -27,16 +27,16 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/search', function (req, res) {
-    const sortParams = req.query.sort;
-    const selectedParams = req.query.select;
-    console.log('sort', sortParams);
-    console.log('selected', selectedParams);
-    res.status(200).json({
-        message: 'search successfull',
-        data: req.query
-    })
-})
+// app.use('/search', function (req, res) {
+//     const sortParams = req.query.sort;
+//     const selectedParams = req.query.select;
+//     console.log('sort', sortParams);
+//     console.log('selected', selectedParams);
+//     res.status(200).json({
+//         message: 'search successfull',
+//         data: req.query
+//     })
+// })
 
 // app.use(checkInput);
 app.use("/api/user", userRouter);
