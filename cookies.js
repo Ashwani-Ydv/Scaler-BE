@@ -1,11 +1,26 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const User = require('./models/userModel');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
+const DB_URL = process.env.DB_URL;
+
+/** DB Connection */
+mongoose.connect(DB_URL).then((connection) => {
+    console.log("DB is connected");
+}).catch((err) => {
+    console.log("vfjde", err);
+})
+
 
 const SECRET_KEY = '3548RHDGSJFVDSB,CGHZFWBSDVCBZVC';
 
 const app = express();
 app.use(cookieParser());
+app.use(express.json());
 
 
 
@@ -83,6 +98,60 @@ app.get('/verify', (req, res) => {
             message: err
         })
     }
+})
+
+app.post('/signup', async (req, res) => {
+    try {
+        const userDetails = req.body;
+        console.log('userDetails', userDetails);
+        const user = await User.create(userDetails);
+        res.json({
+            message: 'User created',
+            user
+        })
+    } catch (err) {
+        console.log(err);
+    }
+
+})
+
+app.post('/login', async (req, res) => {
+    //user validation
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email: email });
+        console.log("user", user);
+        if (!user) {
+            res.status(400).json({
+                message: "user not found"
+            })
+        }
+        else {
+            if (user.password === password) {
+                const token = jwt.sign({ data: user._id }, SECRET_KEY);
+                res.cookie("token", token, {
+                    maxAge: 1000 * 60 * 60 * 24,
+                    httpOnly: true
+                })
+                res.status(200).json({
+                    message: "Login successfull",
+                    data: user
+                })
+            }
+            else {
+                res.status(400).json({
+                    message: "invalid credentials"
+                })
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+
+})
+
+app.get('/userdata', async (req, res) => {
+
 })
 
 app.listen(3000, () => {
