@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const User = require('./models/userModel');
 const mongoose = require('mongoose');
+const productRouter = require('./routes/productRouter');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -147,11 +148,33 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         console.log(err);
     }
-
 })
 
-app.get('/userdata', async (req, res) => {
+const protectRoute = async function (req, res, next) {
+    try {
+        const { token } = req.cookies;
+        const decoded = jwt.verify(token, SECRET_KEY)
+        const user = await User.findById(decoded.data);
+        if (!user) {
+            res.status(400).json({
+                message: "user not found"
+            })
+        }
+        else {
+            req.user = user;
+            next();
+        }
 
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+app.get('/userData', protectRoute, async function (req, res) {
+    res.status(200).json({
+        message: 'user data fetched',
+        data: req.user
+    })
 })
 
 app.listen(3000, () => {
