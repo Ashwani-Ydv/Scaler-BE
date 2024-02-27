@@ -79,18 +79,37 @@ const HTML_TEMPLATE = (text) => {
       `;
 };
 
-const message = "Hi there, you were emailed through NodeMailer";
-const option = {
-    from: process.env.EMAIL,
-    to: 'ydvashwani1996@gmail.com',
-    subject: "Send email in Node Js with Nodemailer using Gmail account",
-    text: message,
-    html: HTML_TEMPLATE(message)
+// const message = "Hi there, you were emailed through NodeMailer";
+// const option = {
+//     from: process.env.EMAIL,
+//     to: 'ydvashwani1996@gmail.com',
+//     subject: "Send email in Node Js with Nodemailer using Gmail account",
+//     text: message,
+//     html: HTML_TEMPLATE(message)
+// }
+
+// SENDEMAIL(option, (info) => {
+//     console.log("Email sent successfully!")
+//     console.log("Message Id", info.messageId);
+// })
+
+async function emailBuilder(to, subject, text) {
+    try {
+        const options = {
+            from: process.env.EMAIL,
+            to: to,
+            subject: subject,
+            text: text,
+            html: HTML_TEMPLATE(text),
+        }; s
+        SENDEMAIL(options, (info) => {
+            console.log("Email sent successfully!");
+            console.log("Message Id", info.messageId);
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
-SENDEMAIL(option, (info) => {
-    console.log("Email sent successfully!")
-    console.log("Message Id", info.messageId);
-})
 
-module.exports = { SENDEMAIL, HTML_TEMPLATE };
+module.exports = { SENDEMAIL, HTML_TEMPLATE, emailBuilder };
