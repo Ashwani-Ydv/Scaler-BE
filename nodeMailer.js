@@ -95,6 +95,7 @@ const HTML_TEMPLATE = (text) => {
 
 async function emailBuilder(to, subject, text) {
     try {
+        console.log("inside email builder")
         const options = {
             from: process.env.EMAIL,
             to: to,

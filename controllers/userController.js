@@ -26,7 +26,7 @@ const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
         const user = await User.findOne({ email });
-        console.log(user);
+        console.log("user", user);
         if (!user) {
             res.status(404).json({
                 status: "fail",
@@ -34,10 +34,12 @@ const forgotPassword = async (req, res) => {
             })
         }
         else {
+            console.log("inside else");
             const token = otpGenerator();
             user.token = token.toString();
             user.tokenTime = Date.now() + 5 * 60 * 1000;// 5 minutes
             await user.save({ validateBeforeSave: false });
+            console.log("inside else1");
             emailBuilder(
                 user.email,
                 "Reset Password",
@@ -62,9 +64,33 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     try {
-        const { token } = req.params;
-        const { password } = req.body;
-        const user = await User
+        const { userId } = req.params;
+        const { token, password, email } = req.body;
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({
+                status: "fail",
+                message: "user not found"
+            })
+        }
+        else {
+            if (user.token === token && user.tokenTime > Date.now()) {
+                user.password = password;
+                user.token = undefined;
+                user.tokenTime = undefined;
+                await user.save({ validateBeforeSave: false });
+                res.status(200).json({
+                    status: "success",
+                    message: "password updated successfully"
+                })
+            }
+            else {
+                res.status(400).json({
+                    status: "fail",
+                    message: "invalid token"
+                })
+            }
+        }
     } catch (err) {
         res.json({
             message: err
