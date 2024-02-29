@@ -6,9 +6,9 @@ const { getUserHandler,
     updateUserById,
     deleteUserById,
     checkInput,
-    forgotPassword,
-    resetPassword
 } = require('../controllers/userController')
+
+const { forgotPassword, resetPassword } = require('../controllers/authController');
 
 /** Product routes */
 
