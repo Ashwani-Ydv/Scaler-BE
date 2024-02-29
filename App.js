@@ -6,6 +6,8 @@ require('dotenv').config();
 /** routers */
 const userRouter = require("./routes/userRouter");
 const productRouter = require("./routes/productRouter");
+const authRouter = require("./routes/authRouter");
+const cookieParser = require("cookie-parser");
 
 const PORT = process.env.PORT || 3001;
 const DB_URL = process.env.DB_URL;
@@ -21,6 +23,7 @@ const app = express();
 const data = fs.readFileSync("./data.json", "utf-8");
 const userData = JSON.parse(data);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use((req, res, next) => {
     console.log(`${req.method} request to ${req.path}`)
@@ -41,6 +44,7 @@ app.use((req, res, next) => {
 // app.use(checkInput);
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
+app.use("/api/auth", authRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

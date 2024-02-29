@@ -2,21 +2,28 @@ const express = require("express");
 const productRouter = express.Router();
 const {
     getProductHandler,
-    createProductHandler,
+    createProducthandler,
     getProductById,
     updateProductById,
     deleteProductById
 } = require('../controllers/productController');
+
+const { checkInput } = require("../utils/crudFactory");
+const { protectRoute, isAuthorized } = require("../controllers/authController");
+
+const authorizedProductRoles = ["admin", "ceo", "sales"];
 const Product = require("../models/productModel");
 
 /** Product routes */
 
 productRouter.get("/", getProducts);
-productRouter.post("/", createProductHandler);
+// productRouter.post("/", createProductHandler);
+productRouter.post("/", checkInput, protectRoute, isAuthorized(authorizedProductRoles), createProducthandler);
 productRouter.get("/bigBillionDay", getBigBillionProducts, getProducts);
 productRouter.get("/:id", getProductById);
 productRouter.patch("/:id", updateProductById);
-productRouter.delete("/:id", deleteProductById);
+// productRouter.delete("/:id", deleteProductById);
+productRouter.delete("/:id", protectRoute, isAuthorized(authorizedProductRoles), deleteProductById);
 
 
 async function getBigBillionProducts(req, res, next) {
