@@ -25,6 +25,7 @@ instance.orders.create(options, (err, order) => {
         console.log(err);
     }
     console.log(order);
+    res.json(order);
 });
 
 app.post('/checkout', async (req, res) => {

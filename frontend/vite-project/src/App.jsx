@@ -1,11 +1,31 @@
-import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+function loadScript(src) {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    }
+    document.body.appendChild(script);
+  })}
 
+function App() {
+  const displayRazorpay = async () => {
+    const res=await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+    if(!res){
+      alert('Razorpay SDK failed to load. Are you online?')
+      return
+    }
+    const responseObj= await fetch('http://localhost:3000/checkout', { method: 'POST' })
+    const paymentResponse=await responseObj.json();
+    console.log(paymentResponse);
+  }
   return (
     <>
       <div>
@@ -16,18 +36,8 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>React Payments</h1>
+      <a onClick={displayRazorpay} target='_blank'>make payment</a>
     </>
   )
 }
